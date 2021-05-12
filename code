@@ -1,0 +1,1256 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include <algorithm>
+#include <chrono>
+#include <Windows.h>
+#include <ctime>
+#include <fstream>
+#include <string>
+using namespace std;
+
+HANDLE N = GetStdHandle(STD_OUTPUT_HANDLE);
+
+
+
+struct node {
+	int data;
+	struct node* prev;
+	struct node* next;
+};
+
+struct node* head = NULL;
+struct node* last = NULL;
+struct node* current = NULL;
+
+
+void printList() {
+	struct node* ptr = head;
+
+	while (ptr != NULL) {
+		cout << ptr->data << " ";
+		ptr = ptr->next;
+	}
+	cout << endl;
+}
+
+
+void addElement(node*& head, int newdata)
+{
+	
+	node* tmp = new node;
+	tmp->data = newdata;
+	tmp->next = NULL;
+	tmp->prev = NULL;
+
+	if (!head)
+		head = tmp;
+	else
+	{
+		
+		node* last = head;
+		while (last->next != NULL)
+			last = last->next;
+
+		last->next = tmp;
+		tmp->prev = last;
+	}
+}
+
+
+
+
+void insert(int data) {
+
+	struct node* link = (struct node*) malloc(sizeof(struct node));
+
+	link->data = data;
+	link->prev = NULL;
+	link->next = NULL;
+
+
+	if (head == NULL) {
+		head = link;
+		return;
+	}
+
+	current = head;
+
+
+	while (current->next != NULL)
+		current = current->next;
+
+	current->next = link;
+	last = link;
+	link->prev = current;
+}
+
+
+
+
+
+void delFirst()
+{
+	struct node* NodeToDel;
+		NodeToDel = head;
+		head = head->next;
+		head->prev = NULL;
+		free(NodeToDel);
+	
+}
+
+void delLast()
+{
+	struct node* NodeToDel;
+		NodeToDel = last;
+		last = last->prev;
+		last->next = NULL;
+		free(NodeToDel);
+	
+}
+void deleteNode(int pos)
+{
+	struct node* curNode;
+	int i;
+
+	curNode = head;
+	for (i = 1; i < pos && curNode != NULL; i++)
+	{
+		curNode = curNode->next;
+	}
+
+	if (pos == 1)
+	{
+		delFirst();
+	}
+	else if (curNode == last)
+	{
+		delLast();
+	}
+	else if (curNode != NULL)
+	{
+		curNode->prev->next = curNode->next;
+		curNode->next->prev = curNode->prev;
+
+		free(curNode); 
+	}
+	
+}
+
+
+void deleteAllNodes() {
+	node* temp = new node();
+	while (head != NULL) {
+		temp = head;
+		head = head->next;
+		delete[] temp;
+	}
+	
+}
+
+int displayEle(struct node* head, int x)
+{
+
+	if (head == NULL)
+		return -1;
+
+	
+	if (x == 0)
+		return head->data;
+
+	
+	return displayEle(head->next, x - 1);
+}
+
+int search(node* head, int x)
+{
+
+	node* temp = head;
+
+	int pos = 0;
+
+	while (temp->data != x
+		&& temp->next != NULL) {
+
+		pos++;
+
+		temp = temp->next;
+	}
+
+	if (temp->data != x)
+		return -1;
+
+	
+	return (pos + 1);
+}
+
+
+
+int main()
+{
+	srand(time(NULL));;
+	int answer=0;
+
+	while (answer != 17) {
+		SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		cout << "Menu" << endl;
+		SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		cout << "|ARRAY|" << endl;
+		SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		cout << "1. Create a dynamic array, randomized from 0 to 99" << endl;
+		cout << "2. Create a dynamic array, entered in a constant stream" << endl;
+		cout << "3. Read array from file" << endl;
+		cout << "4. Add a new element into array" << endl;
+		cout << "5. Delete an element from array(index)" << endl;
+		cout << "6. Delete an element from array(value)" << endl;
+		cout << "7. Display an element from array(index)" << endl;
+		cout << "8. Display an element from array(value)" << endl;
+		SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		cout << "|LIST|" << endl;
+		SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		cout << "9. Create a doubly linked list, randomized from 0 to 99" << endl;
+		cout << "10. Create a doubly linked list, entered in a constant stream" << endl;
+		cout << "11. Read the list from file" << endl;
+		cout << "12. Add a new element to the list" << endl;
+		cout << "13. Delete an element from the list (index)" << endl;
+		cout << "14. Delete an element from the list (value)" << endl;
+		cout << "15. Display an element from the list (index)" << endl;
+		cout << "16. Display an element from the list (value)" << endl;
+		SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		cout << "17. Exit" << endl;
+		SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+		cin >> answer;
+		system("CLS");
+
+
+		switch (answer)
+		{
+		case (1): {
+
+
+
+
+
+
+
+
+			int n;
+			
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in the array: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			if (n == 0) {
+				cout << "The array contains no elements";
+			}
+			else {
+
+				auto start = chrono::high_resolution_clock::now();
+
+				int* arr = new int[n];
+				for (int i = 0; i < n; i++) {
+					arr[i] = rand() % 100;
+				}
+				auto end = chrono::high_resolution_clock::now();
+				chrono::duration<float> duration = end - start;
+
+
+
+
+				for (int i = 0; i < n; i++) {
+					cout << arr[i] << " ";
+				}
+				cout << endl;
+
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Time: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout.setf(ios::fixed, ios::floatfield);
+				cout.precision(7);
+				cout << duration.count() << endl;
+				cout << endl;
+
+				delete[] arr;
+			}
+			break;
+
+		}
+		case (2): {
+			int k;
+			int n = 0;
+			auto start = chrono::high_resolution_clock::now();
+			int* arr = new int[0];
+			int* a;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Press ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "0 ";
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "to stop: " << endl;
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			while (cin >> k) {
+				a = new int[n + 1];
+				for (int i = 0; i != n; i++) {
+					a[i] = arr[i];
+				}
+				a[n] = k;
+				
+				arr = a;
+				n++;
+				if (k==0) {
+					break;
+				}
+
+			}
+
+			int* arrK = new int[n-1];
+			
+			for (int i = 0; i < n-1; i++) {
+				arrK[i] = arr[i];
+			}
+			auto end = chrono::high_resolution_clock::now();
+			chrono::duration<float> duration = end - start;
+
+			for (int i = 0; i < n-1; i++) {
+				cout << arrK[i] << " ";
+				
+			}
+			cout << endl;
+			delete[] arr;
+			delete[] arrK;
+
+
+
+
+
+
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Time: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout.setf(ios::fixed, ios::floatfield);
+			cout.precision(7);
+			cout << duration.count() << endl;
+			cout << endl;
+
+
+
+
+			break;
+		}
+		case (3): {
+			
+			auto start = chrono::high_resolution_clock::now();
+			string arr[9];
+			ifstream file("array.txt");
+			if (file.is_open())
+			{
+				
+				for (int i = 0; i < 9; ++i)
+				{
+					file >> arr[i];
+				}
+				
+			}
+
+
+			auto end = chrono::high_resolution_clock::now();
+			chrono::duration<float> duration = end - start;
+			for (int i = 0; i < 9; ++i)
+			{
+				cout << arr[i] << " ";
+			}
+			cout << endl;
+
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Time: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout.setf(ios::fixed, ios::floatfield);
+			cout.precision(7);
+			cout << duration.count() << endl;
+			cout << endl;
+
+			
+			break;
+		}
+		case (4): {
+
+
+
+
+
+
+
+
+			int n;
+			
+		
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in the array: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			if (n == 0) {
+				cout << "The array contains no elements";
+			}
+			else {
+				
+				int* arr = new int[n];
+				for (int i = 0; i < n; i++) {
+					arr[i] = rand() % 100;
+				}
+				for (int i = 0; i < n; i++) {
+					cout << arr[i] << " ";
+				}
+				cout << endl;
+				back8:
+				int k;
+
+			
+				auto start = chrono::high_resolution_clock::now();
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "Enter an element to add: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cin >> k;
+			
+
+				
+				int newsize = n + 1;
+
+				int  *temp = new int[newsize];
+				for (int i = 0; i < n; i++) {
+					temp[i] = arr[i];
+				}
+
+				delete[] arr;
+                 
+
+				arr = temp;
+
+				temp[n] = k;
+				for (int i = 0; i < newsize; i++) {
+					cout << temp[i] << " ";
+				}
+				cout << endl;
+				n++;
+				auto end = chrono::high_resolution_clock::now();
+				chrono::duration<float> duration = end - start;
+
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Time: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout.setf(ios::fixed, ios::floatfield);
+				cout.precision(7);
+				cout << duration.count() << endl;
+				cout << endl;
+				
+				bool ch;
+				SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Try again?" << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "0/1" << endl;
+				cin >> ch;
+				if (ch == 1) {
+					goto back8 ;
+				}
+				else {
+
+					
+					delete[] temp;
+				}
+			}
+			break;
+
+		}
+
+		case (5): {
+
+			int n;
+			
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in the array: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			if (n == 0) {
+				cout << "The array contains no elements";
+			}
+			else {
+				
+				int* arr = new int[n];
+				for (int i = 0; i < n; i++) {
+					arr[i] = rand() % 100;
+				}
+				for (int i = 0; i < n; i++) {
+					cout << arr[i] << " ";
+				}
+				cout << endl;
+
+
+				back9:
+				auto start = chrono::high_resolution_clock::now();
+				int* temp1 = new int[n - 1];
+				int index = 0;
+
+
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "Enter an index an element to delete ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cin >> index;
+				if ((index <= n) && (index > 0)) {
+
+					index--;
+
+
+
+					
+
+					for (int i = 0; i < index; i++) {
+						temp1[i] = arr[i];
+					}
+					for (int i = index + 1; i < n; i++) {
+						temp1[i - 1] = arr[i];
+					}
+					delete[] arr;
+					arr = temp1;
+					for (int i = 0; i < n - 1; i++) {
+						cout << temp1[i] << " ";
+					}
+					cout << endl;
+					auto end = chrono::high_resolution_clock::now();
+					chrono::duration<float> duration = end - start;
+
+					n--;
+					if (n == 0) {
+						cout << endl;
+						cout << "No elements left!" << endl;
+						cout << endl;
+						delete[] temp1;
+						break;
+					}
+
+					SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+					cout << "Time (index): ";
+					SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout.setf(ios::fixed, ios::floatfield);
+					cout.precision(7);
+					cout << duration.count() << endl;
+					cout << endl;
+
+
+					bool ch;
+					SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+					cout << "Try again?" << endl;
+					SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout << "0/1" << endl;
+					cin >> ch;
+					if (ch == 1) {
+						goto back9;
+					}
+					else {
+
+
+						delete[] temp1;
+					}
+				}
+				else {
+
+					cout << endl;
+					cout << "Wrong index!" << endl;
+					cout << endl;
+
+
+
+
+					delete[] arr;
+					delete[] temp1;
+				}
+			}
+			break;
+
+		}
+		case(6): {
+			int n;
+		    
+
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in the array: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			if (n == 0) {
+				cout << "The array contains no elements";
+			}
+			else {
+				
+				int* arr = new int[n];
+				for (int i = 0; i < n; i++) {
+					arr[i] = rand() % 100;
+				}
+				for (int i = 0; i < n; i++) {
+					cout << arr[i] << " ";
+				}
+				cout << endl;
+				back10:
+				int* temp1 = new int[n - 1];
+				auto start1 = chrono::high_resolution_clock::now();
+			
+				int value = 0;
+
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "Enter a value of an element to delete ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cin >> value;
+
+				int count = distance(arr, find(arr, arr + n, value));
+			
+				if (count != n) {
+
+					int* temp2 = new int[n - 1];
+
+					for (int i = 0; i < count; i++) {
+						temp2[i] = arr[i];
+					}
+					for (int i = count + 1; i < n; i++) {
+						temp2[i - 1] = arr[i];
+					}
+
+					delete[] arr;
+					arr = temp2;
+
+					for (int i = 0; i < n - 1; i++) {
+						cout << temp2[i] << " ";
+					}
+					cout << endl;
+					auto end1 = chrono::high_resolution_clock::now();
+					chrono::duration<float> duration1 = end1 - start1;
+					n--;
+
+					if (n == 0) {
+						cout << endl;
+						cout << "No elements left!" << endl;
+						cout << endl;
+						delete[] temp2;
+						break;
+					}
+
+
+
+					SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+					cout << "Time (value): ";
+					SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout.setf(ios::fixed, ios::floatfield);
+					cout.precision(7);
+					cout << duration1.count() << endl;
+					cout << endl;
+					
+					delete[] temp1;
+
+					bool ch;
+					SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+					cout << "Try again?" << endl;
+					SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout << "0/1" << endl;
+					cin >> ch;
+					if (ch == 1) {
+						goto back10;
+					}
+					else {
+
+
+						delete[] temp2;
+						break;
+					}
+
+
+				}
+				
+
+
+
+
+				else {
+					cout << endl;
+					cout << "The element is not present in the array" << endl;
+					cout << endl;
+					delete[] arr;
+					delete[] temp1;
+				}
+			}
+			break;
+		}
+		case (7): {
+			int n;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in the array: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			if (n == 0) {
+				cout << "The array contains no elements";
+			}
+			else {
+				
+
+			
+				
+				int* arr = new int[n];
+				for (int i = 0; i < n; i++) {
+					arr[i] = rand() % 100;
+				}
+
+			back6:
+				for (int i = 0; i < n; i++) {
+					cout << arr[i] << " ";
+				}
+				cout << endl;
+
+				auto start1 = chrono::high_resolution_clock::now();
+				int index = 0;
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "Enter an index of an array element: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cin >> index;
+				if ((index <= n) && (index > 0)) {
+
+
+					cout << endl;
+					SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout << "Element value: ";
+					SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout << arr[index - 1] << endl;
+
+					auto end1 = chrono::high_resolution_clock::now();
+					chrono::duration<float> duration1 = end1 - start1;
+
+
+					SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+					cout << "Time (index): ";
+					SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout.setf(ios::fixed, ios::floatfield);
+					cout.precision(7);
+					cout << duration1.count() << endl;
+					cout << endl;
+
+
+
+					bool ch;
+					SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+					cout << "Try again?" << endl;
+					SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+					cout << "0/1" << endl;
+					cin >> ch;
+					if (ch == 1) {
+						goto back6;
+					}
+
+					delete[] arr;
+				
+				}
+				else {
+					cout << endl;
+					cout << "Wrong index!" << endl;
+					cout << endl;
+					delete[] arr;
+				}
+			}
+
+			break;
+		}
+		case (8): {
+			int n;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in the array: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			if (n == 0) {
+				cout << "The array contains no elements";
+			}
+			else {
+				int* arr = new int[n];
+				for (int i = 0; i < n; i++) {
+					arr[i] = rand() % 100;
+				}
+
+				back7:
+				for (int i = 0; i < n; i++) {
+					cout << arr[i] << " ";
+				}
+				cout << endl;
+
+				int value = 0;
+
+				auto start = chrono::high_resolution_clock::now();
+			
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "Enter a value of an array element: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cin >> value;
+
+				for (int i = 0; i < n; i++) {
+					if (arr[i] == value) {
+						SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+						cout << "Element found at index ";
+						SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+						cout << i + 1 << endl;
+
+					}
+				}
+				auto end = chrono::high_resolution_clock::now();
+				chrono::duration<float> duration = end - start;
+
+				cout << endl;
+
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Time (value): ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout.setf(ios::fixed, ios::floatfield);
+				cout.precision(7);
+				cout << duration.count() << endl;
+				cout << endl;
+
+
+				bool ch;
+				SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Try again?" << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "0/1" << endl;
+				cin >> ch;
+				if (ch == 1) {
+					goto back7;
+				}
+
+
+
+				delete[] arr;
+			}
+			break;
+		}
+
+		case (9): {
+
+			int x, n;
+			auto start = chrono::high_resolution_clock::now();
+			SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in a list: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			cout << endl;
+			for (int i = 0; i < n; i++) {
+				
+				insert(rand() % 100);
+			}
+			auto end = chrono::high_resolution_clock::now();
+			chrono::duration<float> duration = end - start;
+
+			printList();
+
+			cout << endl;
+
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Time: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout.setf(ios::fixed, ios::floatfield);
+			cout.precision(7);
+			cout << duration.count() << endl;
+			cout << endl;
+
+		    deleteAllNodes();
+		
+
+
+			break;
+
+		}
+		case (10): {
+
+
+
+
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Press ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "0 ";
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "to stop: " << endl;
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			int k;
+			int n = 0;
+			auto start = chrono::high_resolution_clock::now();
+			int* arr = new int[0];
+			int* a;
+
+
+			while (cin >> k) {
+				a = new int[n + 1];
+				for (int i = 0; i != n; i++) {
+					a[i] = arr[i];
+				}
+				a[n] = k;
+				
+				arr = a;
+				n++;
+				if (k == 0) {
+					break;
+				}
+
+			}
+
+			int* arrK = new int[n - 1];
+
+			for (int i = 0; i < n - 1; i++) {
+				arrK[i] = arr[i];
+			}
+			
+
+			for (int i = 0; i < n - 1; i++) {
+				insert(arrK[i]);
+
+			}
+			auto end = chrono::high_resolution_clock::now();
+			chrono::duration<float> duration = end - start;
+
+			printList();
+
+			cout << endl;
+
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Time: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout.setf(ios::fixed, ios::floatfield);
+			cout.precision(7);
+			cout << duration.count() << endl;
+			cout << endl;
+
+			deleteAllNodes();
+			delete[] arr;
+			delete[] arrK;
+
+			break;
+
+		}
+
+		case (11): {
+		
+
+
+
+			int value;
+			auto start = chrono::high_resolution_clock::now();
+			ifstream file("list.txt");
+			if (file.is_open())
+			{
+
+				for (int i = 0; i < 9; ++i)
+				{
+					file >> value;
+					insert(value);
+				}
+
+			}
+			auto end = chrono::high_resolution_clock::now();
+			chrono::duration<float> duration = end - start;
+
+
+			
+
+			printList();
+
+			cout << endl;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Time: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout.setf(ios::fixed, ios::floatfield);
+			cout.precision(7);
+			cout << duration.count() << endl;
+			cout << endl;
+			deleteAllNodes();
+			break;
+		}
+
+		case(12): {
+
+			int x, n;
+
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in a list: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			
+			for (int i = 0; i < n; i++) {
+
+				insert(rand() % 100);
+			}
+			printList();
+			auto start = chrono::high_resolution_clock::now();
+			back1:
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter an element to add to the end of the list: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> x;
+			
+			addElement(head, x);
+			auto end = chrono::high_resolution_clock::now();
+			chrono::duration<float> duration = end - start;
+			printList();
+
+
+			cout << endl;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Time: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout.setf(ios::fixed, ios::floatfield);
+			cout.precision(7);
+			cout << duration.count() << endl;
+			cout << endl;
+
+			bool ch;
+			SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Try again?" << endl;
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "0/1" << endl;
+			cin >> ch;
+			if (ch == 1) {
+				goto back1;
+			}
+			
+		
+			deleteAllNodes();
+			break;
+		}
+		case(13): {
+
+			int x, n;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in a list: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+
+			for (int i = 0; i < n; i++) {
+
+				insert(rand() % 100);
+			}
+			printList();
+			auto start = chrono::high_resolution_clock::now();
+		back2:
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter an element index to delete: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> x;
+			if ((x <= n) && (x > 0)) {
+
+				deleteNode(x);
+				auto end = chrono::high_resolution_clock::now();
+				chrono::duration<float> duration = end - start;
+				printList();
+
+				cout << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Time: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout.setf(ios::fixed, ios::floatfield);
+				cout.precision(7);
+				cout << duration.count() << endl;
+				cout << endl;
+
+				bool ch;
+				SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Try again?" << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "0/1" << endl;
+				cin >> ch;
+				if (ch == 1) {
+					goto back2;
+				}
+				else {
+					deleteAllNodes();
+					break;
+				}
+			}
+			else {
+				cout << endl;
+				cout << "Wrong index!" << endl;
+				cout << endl;
+				deleteAllNodes();
+				break;
+			}
+			
+		}
+
+		case(14): {
+			node* temp = head;
+			int x, n;
+		
+			
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in a list: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+
+			for (int i = 0; i < n; i++) {
+
+				insert(rand() % 100);
+			}
+			printList();
+
+
+			
+			
+			
+
+			auto start = chrono::high_resolution_clock::now();
+		back3:
+		
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter an element to delete: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> x;
+			
+			deleteNode(search(head, x));
+			auto end = chrono::high_resolution_clock::now();
+			chrono::duration<float> duration = end - start;
+			printList();
+
+			cout << endl;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Time: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout.setf(ios::fixed, ios::floatfield);
+			cout.precision(7);
+			cout << duration.count() << endl;
+			cout << endl;
+			
+			bool ch;
+			SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+			cout << "Try again?" << endl;
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "0/1" << endl;
+			cin >> ch;
+			if (ch == 1) {
+				goto back3;
+			}
+			else {
+				deleteAllNodes();
+				break;
+			}
+		}
+		case (15): {
+			int x, n;
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in a list: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			for (int i = 0; i < n; i++) {
+
+				insert(rand() % 100);
+			}
+			printList();
+			auto start = chrono::high_resolution_clock::now();
+		back4:
+			
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter an element index to display: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> x;
+
+			if ((x <= n) && (x > 0)) {
+
+				cout << displayEle(head, x - 1) << endl;;
+				auto end = chrono::high_resolution_clock::now();
+				chrono::duration<float> duration = end - start;
+
+				cout << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Time: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout.setf(ios::fixed, ios::floatfield);
+				cout.precision(7);
+				cout << duration.count() << endl;
+				cout << endl;
+
+				bool ch;
+				SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Try again?" << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "0/1" << endl;
+				cin >> ch;
+				if (ch == 1) {
+					goto back4;
+				}
+				else {
+					deleteAllNodes();
+					break;
+				}
+			}
+			else {
+				cout << endl;
+				cout << "Wrong index!" << endl;
+				cout << endl;
+				deleteAllNodes();
+				break;
+			}
+
+		}
+
+		case (16): {
+	
+			int x, n;
+		
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter the amount of elements in a list: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> n;
+			for (int i = 0; i < n; i++) {
+
+				insert(rand() % 100);
+			}
+			printList();
+			auto start = chrono::high_resolution_clock::now();
+			back5:
+			SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cout << "Enter an element value to display: ";
+			SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+			cin >> x;
+			
+			int c = search(head, x);
+			if (c == -1) {
+				cout << endl;
+				cout << "The element is not present in the list" << endl;
+				cout << endl;
+				deleteAllNodes();
+				break;
+			}
+			else {
+				cout << c;
+				auto end = chrono::high_resolution_clock::now();
+				chrono::duration<float> duration = end - start;
+
+				cout << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Time: ";
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout.setf(ios::fixed, ios::floatfield);
+				cout.precision(7);
+				cout << duration.count() << endl;
+				cout << endl;
+
+
+				bool ch;
+				SetConsoleTextAttribute(N, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+				cout << "Try again?" << endl;
+				SetConsoleTextAttribute(N, FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+				cout << "0/1" << endl;
+				cin >> ch;
+				if (ch == 1) {
+					goto back5;
+				}
+				else {
+					deleteAllNodes();
+					break;
+				}
+			}
+		}
+
+
+		}
+	}
+	return 0;
+
+
+
+}
